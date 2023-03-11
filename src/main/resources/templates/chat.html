@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Title</title>
+
+</head>
+<script type="text/javascript">
+
+
+<!--	var ws;-->
+
+<!--	function wsOpen(){-->
+<!--		ws = new WebSocket("ws://" + location.host + "/chating/"+$("#roomNumber").val());-->
+<!--		wsEvt();-->
+<!--	}-->
+
+<!--	function wsEvt() {-->
+<!--		ws.onopen = function(data){-->
+<!--			//소켓이 열리면 동작-->
+<!--		}-->
+
+<!--		ws.onmessage = function(data) {-->
+<!--			//메시지를 받으면 동작-->
+<!--			var msg = data.data;-->
+<!--			if(msg != null && msg.trim() != ''){-->
+<!--				var d = JSON.parse(msg);-->
+<!--				if(d.type == "getId"){-->
+<!--					var si = d.sessionId != null ? d.sessionId : "";-->
+<!--					if(si != ''){-->
+<!--						$("#sessionId").val(si);-->
+<!--					}-->
+<!--				}else if(d.type == "message"){-->
+<!--					if(d.sessionId == $("#sessionId").val()){-->
+<!--						$("#chating").append("<p class='me'>나 :" + d.msg + "</p>");-->
+<!--					}else{-->
+<!--						$("#chating").append("<p class='others'>" + d.userName + " :" + d.msg + "</p>");-->
+<!--					}-->
+
+<!--				}else{-->
+<!--					console.warn("unknown type!")-->
+<!--				}-->
+<!--			}-->
+<!--		}-->
+
+<!--		document.addEventListener("keypress", function(e){-->
+<!--			if(e.keyCode == 13){ //enter press-->
+<!--				send();-->
+<!--			}-->
+<!--		});-->
+<!--	}-->
+
+<!--	function chatName(){-->
+<!--		var userName = $("#userName").val();-->
+<!--		if(userName == null || userName.trim() == ""){-->
+<!--			alert("사용자 이름을 입력해주세요.");-->
+<!--			$("#userName").focus();-->
+<!--		}else{-->
+<!--			wsOpen();-->
+<!--			$("#yourName").hide();-->
+<!--			$("#yourMsg").show();-->
+<!--		}-->
+<!--	}-->
+
+<!--	function send() {-->
+<!--		var option ={-->
+<!--			type: "message",-->
+<!--			roomNumber: $("#roomNumber").val(),-->
+<!--			sessionId : $("#sessionId").val(),-->
+<!--			userName : $("#userName").val(),-->
+<!--			msg : $("#chatting").val()-->
+<!--		}-->
+<!--		ws.send(JSON.stringify(option))-->
+<!--		$('#chatting').val("");-->
+<!--	}-->
+
+
+
+</script>
+<body>
+<div id="container" class="container">
+    <h1>[[${roomName}]]의 채팅방</h1>
+
+    <input type="hidden" id="sessionId" value="">
+    <input type="hidden" id="roomNumber" th:value="${roomNumber}">
+
+    <!--    <div id="chating" class="chating">-->
+    <!--    </div>-->
+
+    <!--    <div id="yourName">-->
+    <!--        <table class="inputTable">-->
+    <!--            <tr>-->
+    <!--                <th>사용자명</th>-->
+    <!--                <th><input type="text" name="userName" id="userName"></th>-->
+    <!--                <th>-->
+    <!--                    <button onclick="chatName()" id="startBtn">이름 등록</button>-->
+    <!--                </th>-->
+    <!--            </tr>-->
+    <!--        </table>-->
+    <!--    </div>-->
+    <!--    <div id="yourMsg">-->
+    <!--        <table class="inputTable">-->
+    <!--            <tr>-->
+    <!--                <th>메시지</th>-->
+    <!--                <th><input id="chatting" placeholder="보내실 메시지를 입력하세요."></th>-->
+    <!--                <th>-->
+    <!--                    <button onclick="send()" id="sendBtn">보내기</button>-->
+    <!--                </th>-->
+    <!--            </tr>-->
+    <!--        </table>-->
+    <!--    </div>-->
+
+</div>
+<div class="color-options">
+    <input type="color" id="color"/>
+    <div class="color-option" style="background-color : #ffffff" data-color="#ffffff"></div>
+    <div class="color-option" style="background-color : #3498db" data-color="#3498db"></div>
+    <div class="color-option" style="background-color : #34495e" data-color="#34495e"></div>
+    <div class="color-option" style="background-color : #27ae60" data-color="#27ae60"></div>
+    <div class="color-option" style="background-color : #8e44ad" data-color="#8e44ad"></div>
+    <div class="color-option" style="background-color : #f1c40f" data-color="#f1c40f"></div>
+    <div class="color-option" style="background-color : #e74c3c" data-color="#e74c3c"></div>
+    <div class="color-option" style="background-color : #95a5a6" data-color="#95a5a6"></div>
+    <div class="color-option" style="background-color : #d35400" data-color="#d35400"></div>
+    <div class="color-option" style="background-color : #bdc3c7" data-color="#bdc3c7"></div>
+    <div class="color-option" style="background-color : #2ecc71" data-color="#2ecc71"></div>
+    <div class="color-option" style="background-color : #000000" data-color="#000000"></div>
+</div>
+<canvas></canvas>
+<div class="btns">
+    <input id="line-width" type="range" min="1" max="10" value="5" step="0.1"></input>
+    <button id="mode-btn">🩸 Fill</button>
+    <button id="destroy-btn">💣 Destroy</button>
+    <button id="eraser-btn">❌ Erase</button>
+    <label for="file">🖼 Add Photo</label>
+    <input type="file" accept="image/*" id="file"/>
+    <input type="text" placeholder="Add Text here... ^o^ " id="text">
+    <button id="save">💾 Save image</button>
+    <button id="save">💾 Save image</button>
+</div>
+<script type="text/javascript">
+		const modeBtn = document.getElementById("mode-btn");
+		const destroyBtn = document.getElementById("destroy-btn");
+		const eraserBtn = document.getElementById("eraser-btn");
+		const saveBtn = document.getElementById("save");
+		const textInput = document.getElementById("text");
+		const fileInput = document.getElementById("file");
+		const colorOptions = Array.from(
+		    document.getElementsByClassName("color-option")
+		);
+
+		const lineWidth = document.getElementById("line-width");
+		const canvas= document.querySelector("canvas");
+		const ctx = canvas.getContext("2d");
+
+
+		const CANVAS_WIDTH = 800;
+		const CANVAS_HEIGHT = 800;
+
+
+		let isPainting = false;
+		let isFilling = false;
+		let isEraseMode = false;
+
+		let isP = false;
+
+		function onLoad(){
+		    canvas.width = CANVAS_WIDTH;
+		    canvas.height = CANVAS_HEIGHT;
+		    ctx.lineWidth = lineWidth.value;
+		    ctx.lineCap = "round";
+		}
+
+
+		function onMove(event){
+		    if(isPainting){
+		        ctx.lineTo(event.offsetX, event.offsetY);
+		        ctx.stroke();
+		        sendStroke(event.offsetX, event.offsetY, isPainting, "stroke");
+		        return;
+		    }
+		    ctx.beginPath();
+		    ctx.moveTo(event.offsetX, event.offsetY);
+		}
+
+		function onMouseDown(event){
+		    const mouseX = event.offsetX;
+		    const mouseY = event.offsetY;
+
+		    canvas.addEventListener('mousemove', onMouseMove);
+		    canvas.addEventListener('mouseup', onMouseUp);
+
+		    ctx.beginPath();
+
+		    ctx.moveTo(mouseX, mouseY);
+                    isP = true;
+		    function onMouseMove(event) {
+                        // 현재 좌표 값 가져오기
+                        const mouseX = event.offsetX;
+                        const mouseY = event.offsetY;
+
+                        // 시작점부터 현재 좌표까지 선 그리기
+                        ctx.lineTo(mouseX, mouseY);
+                        ctx.stroke();
+
+                        var option ={
+                            type: "stroke",
+                            roomNumber: $("#roomNumber").val(),
+                            sessionId : $("#sessionId").val(),
+                            userName : $("#userName").val(),
+                            offsetX : mouseX,
+                            offsetY : mouseY,
+                            isPainting : isPainting,
+                            isP : isP,
+                            strokeStyle : ctx.strokeStyle,
+                            lineWidth: ctx.lineWidth,
+		        }
+		        ws.send(JSON.stringify(option))
+                        // 좌표 값을 문자열로 변환
+                        const msg = JSON.stringify({ x: mouseX, y: mouseY });
+
+                        // 서버로 전송
+                        ws.send(msg);
+                    }
+                     function onMouseUp() {
+                        var option ={
+                            type: "stroke",
+                            roomNumber: $("#roomNumber").val(),
+                            sessionId : $("#sessionId").val(),
+                            userName : $("#userName").val(),
+                            offsetX : mouseX,
+                            offsetY : mouseY,
+                            isP : isP,
+                            strokeStyle : ctx.strokeStyle,
+                            lineWidth: ctx.lineWidth,
+		        }
+		        isP = false;
+                        canvas.removeEventListener('mousemove', onMouseMove);
+                        canvas.removeEventListener('mouseup', onMouseUp);
+                     }
+
+
+		}
+
+		function startPainting(event){
+		    isPainting = true;
+		}
+
+		function cancelPainting(event){
+		    isPainting = false;
+		    ctx.beginPath();
+		    sendStroke(event.offsetX, event.offsetY, isPainting, "stroke");
+		}
+		function cancelPaintingLeave(event){
+		    isPainting = false;
+		    ctx.beginPath();
+		}
+
+		function onLineWidthChange(event){
+		    ctx.lineWidth = event.target.value;
+		}
+
+		function onColorChange(event){
+		    ctx.strokeStyle = event.target.value;
+		    ctx.fillStyle = event.target.value;
+		}
+
+		function onColorClick(event){
+		    const colorValue = event.target.dataset.color;
+		    ctx.strokeStyle = colorValue;
+		    ctx.fillStyle = colorValue;
+		    color.value = colorValue;
+		}
+
+		function onModeClick(event){
+		    if(isFilling){
+		        isFilling = false;
+		        modeBtn.innerText = "🩸 Fill";
+		    } else{
+		        isFilling = true;
+		        modeBtn.innerText = "🖌 Draw";
+		    }
+		}
+
+		function onCanvasClick(event){
+		    if(isFilling){
+		        ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+		        sendFill();
+		    }
+		}
+
+		function onDestroyClick(event){
+		    doDestroy();
+		    sendDestroy();
+		}
+		function doDestroy(){
+		    ctx.fillStyle = "white";
+		    ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+		}
+
+		function onEraserClick(event){
+		    if(isEraseMode){
+		        isEraseMode = false;
+		        ctx.strokeStyle = color.value;
+		        eraserBtn.innerText = "❌ Erase";
+		    }else{
+		        ctx.strokeStyle = "white";
+		        isEraseMode = true;
+		        isFilling = false;
+		        eraserBtn.innerText = "🖌 Draw";
+		    }
+		}
+
+		function onFileChange(event){
+		    const file = event.target.files[0];
+		    const url = URL.createObjectURL(file);
+		    console.log(url);
+		    const image = new Image();
+		    image.src = url;
+		    image.onload = function(){
+		        ctx.drawImage(image, 0, 0, CANVAS_WIDTH,CANVAS_HEIGHT);
+		    }
+		}
+
+		function onDoubleClick(event){
+		    const text = textInput.value;
+		    if(text !== ""){
+		        ctx.save();
+		        sendText(text, event.offsetX, event.offsetY);
+		        ctx.restore();
+		    }
+		}
+		function doStrokeText(text, offsetX, offsetY){
+		        ctx.lineWidth = 1;
+			ctx.font = "20px";
+			ctx.strokeText(text, offsetX, offsetY);
+		}
+
+		function onSaveClick(event){
+		    const url = canvas.toDataURL();
+		    const a = document.createElement("a");
+		    a.href = url;
+		    a.download = "myDraw.jpg";
+		    a.click();
+		}
+
+                canvas.addEventListener('mousedown', onMouseDown);
+		canvas.addEventListener("dblclick", onDoubleClick);
+<!--		canvas.addEventListener("mousemove", onMove);-->
+<!--		canvas.addEventListener("mousedown", startPainting);-->
+		canvas.addEventListener("click", onCanvasClick);
+<!--		canvas.addEventListener("mouseup", cancelPainting);-->
+		canvas.addEventListener("mouseleave", cancelPaintingLeave);
+
+		lineWidth.addEventListener("change", onLineWidthChange);
+		color.addEventListener("change", onColorChange);
+
+		colorOptions.forEach((color) => color.addEventListener("click", onColorClick))
+
+		modeBtn.addEventListener("click", onModeClick);
+		destroyBtn.addEventListener("click", onDestroyClick);
+		eraserBtn.addEventListener("click", onEraserClick);
+		fileInput.addEventListener("change", onFileChange);
+		saveBtn.addEventListener("click", onSaveClick);
+
+
+
+
+		window.addEventListener("load", onLoad);
+
+
+	var ws;
+
+	function wsOpen(){
+		ws = new WebSocket("ws://" + location.host + "/chating/"+$("#roomNumber").val());
+		wsEvt();
+	}
+
+	function wsEvt() {
+		ws.onopen = function(data){
+			//소켓이 열리면 동작
+		}
+
+		ws.onmessage = function(data) {
+			//메시지를 받으면 동작
+			var msg = data.data;
+			if(msg != null && msg.trim() != ''){
+				var d = JSON.parse(msg);
+				if(d.type == "getId"){
+					var si = d.sessionId != null ? d.sessionId : "";
+					if(si != ''){
+						$("#sessionId").val(si);
+					}
+				}else if(d.type == "message"){
+					if(d.sessionId == $("#sessionId").val()){
+						$("#chating").append("<p class='me'>나 :" + d.msg + "</p>");
+					}else{
+						$("#chating").append("<p class='others'>" + d.userName + " :" + d.msg + "</p>");
+					}
+				}else if(d.type == "stroke"){
+				        if(d.isP){
+                                            ctx.save();
+                                            ctx.strokeStyle = d.strokeStyle;
+                                            ctx.lineWidth = d.lineWidth;
+                                            ctx.lineTo(d.offsetX, d.offsetY);
+                                            ctx.stroke();
+<!--				        if(d.isPainting){-->
+<!--                                            ctx.strokeStyle = d.strokeStyle;-->
+<!--                                            ctx.lineWidth = d.lineWidth;-->
+<!--                                            ctx.lineTo(d.offsetX, d.offsetY);-->
+<!--                                            ctx.stroke();-->
+<!--                                        }-->
+<!--                                        if(!d.isPainting){-->
+<!--                                            ctx.beginPath();-->
+<!--                                        } else{-->
+<!--                                            ctx.beginPath();-->
+<!--                                            ctx.moveTo(d.offsetX, d.offsetY);-->
+<!--					}-->
+                                            ctx.beginPath();
+                                            ctx.restore();
+                                        }else{
+                                            ctx.stroke();
+                                        }
+
+					console.log("send");
+				}else if(d.type == "fill"){
+				    ctx.save();
+				    ctx.fillStyle = d.fillStyle;
+				    ctx.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+				    ctx.restore();
+				}else if(d.type == "text"){
+				    doStrokeText(d.text, d.offsetX, d.offsetY);
+				}else if(d.type == "destroy"){
+				    doDestroy();
+				}
+				else{
+					console.warn("unknown type!")
+				}
+			}
+		}
+
+		document.addEventListener("keypress", function(e){
+			if(e.keyCode == 13){ //enter press
+				send();
+			}
+		});
+	}
+
+<!--	function chatName(){-->
+<!--		var userName = $("#userName").val();-->
+<!--		if(userName == null || userName.trim() == ""){-->
+<!--			alert("사용자 이름을 입력해주세요.");-->
+<!--			$("#userName").focus();-->
+<!--		}else{-->
+<!--			wsOpen();-->
+<!--			$("#yourName").hide();-->
+<!--			$("#yourMsg").show();-->
+<!--		}-->
+<!--	}-->
+
+<!--	function send() {-->
+<!--		var option ={-->
+<!--			type: "message",-->
+<!--			roomNumber: $("#roomNumber").val(),-->
+<!--			sessionId : $("#sessionId").val(),-->
+<!--			userName : $("#userName").val(),-->
+<!--			msg : $("#chatting").val()-->
+<!--		}-->
+<!--		ws.send(JSON.stringify(option))-->
+<!--		$('#chatting').val("");-->
+<!--	}-->
+
+
+	function sendStroke(offsetX, offsetY, isPainting, type) {
+		var option ={
+			type: "stroke",
+			roomNumber: $("#roomNumber").val(),
+			sessionId : $("#sessionId").val(),
+			userName : $("#userName").val(),
+			offsetX : offsetX,
+			offsetY : offsetY,
+			isPainting : isPainting,
+			strokeStyle : ctx.strokeStyle,
+			lineWidth: ctx.lineWidth,
+		}
+		ws.send(JSON.stringify(option))
+	}
+	function sendFill(){
+	        var option = {
+	            type: "fill",
+	            roomNumber: $("#roomNumber").val(),
+	            sessionId : $("#sessionId").val(),
+	            userName : $("#userName").val(),
+	            fillStyle : ctx.fillStyle,
+	        }
+	        ws.send(JSON.stringify(option));
+	}
+	function sendDestroy(){
+		var option ={
+			type: "destroy",
+			roomNumber: $("#roomNumber").val(),
+			sessionId : $("#sessionId").val(),
+			userName : $("#userName").val(),
+		}
+		ws.send(JSON.stringify(option));
+	}
+	function sendText(text, offsetX, offsetY){
+                var option ={
+			type: "text",
+			roomNumber: $("#roomNumber").val(),
+			sessionId : $("#sessionId").val(),
+			userName : $("#userName").val(),
+			offsetX : offsetX,
+			offsetY : offsetY,
+			text : text,
+		}
+		ws.send(JSON.stringify(option));
+	}
+	document.addEventListener("DOMContentLoaded", function(){
+		wsOpen();
+	});
+
+
+</script>
+</body>
+</html>
